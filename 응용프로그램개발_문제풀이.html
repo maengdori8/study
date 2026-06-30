@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>응용 프로그래밍 개발 · 5지선다 문제 풀이</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F5FB; --card:#FFFFFF; --ink:#1C1B2E; --muted:#56556E; --faint:#8a89a0;
+    --line:#E6E5F1; --line-soft:#EFEEF8;
+    --blue:#5848D6; --blue-deep:#3A2EA0; --blue-bg:#ECEAFB; --blue-chip:#DCD7F5;
+    --good:#1E8A55; --good-bg:#E4F3EB; --good-line:#9FD4B7;
+    --bad:#C0392B; --bad-bg:#F8E7E4; --bad-line:#E6B5AD;
+    --amber:#9A6610; --amber-bg:#FBF1D9; --amber-line:#E7CB87;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --shadow:0 1px 2px rgba(28,27,46,.05),0 10px 30px rgba(28,27,46,.07);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:17.5px;line-height:1.7;-webkit-font-smoothing:antialiased;word-break:keep-all;}
+  .disp{font-family:"Space Grotesk","Pretendard",sans-serif;letter-spacing:-.01em;}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px;}
+  header.hero{background:radial-gradient(820px 320px at 85% -130px, rgba(88,72,214,.18), transparent 60%),linear-gradient(180deg,#fff,var(--paper));border-bottom:1px solid var(--line);}
+  .hero-in{padding:38px 0 26px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;color:var(--blue-deep);background:var(--blue-chip);padding:6px 13px;border-radius:999px;text-transform:uppercase;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+  h1.title{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.12;margin:15px 0 6px;}
+  h1.title em{font-style:normal;color:var(--blue-deep);}
+  .sub{color:var(--muted);font-size:16px;margin:0;}
+  .sub b{color:var(--blue-deep);}
+  main{padding:26px 0 70px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 26px;margin-bottom:20px;}
+  @media(max-width:560px){.panel{padding:19px 16px;}}
+  .sec-label{font-size:12.5px;font-weight:800;letter-spacing:.06em;color:var(--blue-deep);text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .sec-label .ln{flex:1;height:1px;background:var(--line);}
+  .units{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  @media(max-width:520px){.units{grid-template-columns:1fr;}}
+  .uchk{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;cursor:pointer;transition:.14s;background:#fff;}
+  .uchk:hover{border-color:var(--blue-chip);background:#FBFBFE;}
+  .uchk.on{border-color:var(--blue);background:var(--blue-bg);}
+  .uchk .box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--line);border-radius:6px;display:grid;place-items:center;transition:.14s;}
+  .uchk.on .box{background:var(--blue);border-color:var(--blue);}
+  .uchk .box::after{content:"✓";color:#fff;font-size:13px;font-weight:900;opacity:0;transform:scale(.5);transition:.14s;}
+  .uchk.on .box::after{opacity:1;transform:scale(1);}
+  .uchk .t{font-size:14px;font-weight:700;line-height:1.3;}
+  .uchk .cnt{margin-left:auto;font-size:11px;font-weight:800;color:var(--blue-deep);background:#fff;border:1px solid var(--blue-chip);border-radius:20px;padding:2px 8px;}
+  .seg{display:inline-flex;gap:6px;flex-wrap:wrap;}
+  .chip{font-family:inherit;font-size:14px;font-weight:700;color:var(--blue-deep);background:#fff;border:1.5px solid var(--blue-chip);border-radius:10px;padding:9px 16px;cursor:pointer;transition:.14s;}
+  .chip:hover{background:var(--blue-bg);}
+  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .link-btn{background:none;border:0;color:var(--blue);font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;padding:4px;}
+  .startbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;}
+  .countinfo{font-size:14px;color:var(--muted);font-weight:600;}
+  .countinfo b{color:var(--blue-deep);font-weight:800;}
+  .btn{font-family:inherit;font-size:16px;font-weight:800;color:#fff;background:var(--blue);border:0;border-radius:12px;padding:14px 26px;cursor:pointer;transition:.15s;box-shadow:0 3px 12px rgba(88,72,214,.28);}
+  .btn:hover{background:var(--blue-deep);}
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{background:#BDBAD6;box-shadow:none;cursor:not-allowed;}
+  .btn.ghost{background:#fff;color:var(--blue-deep);border:1.5px solid var(--blue-chip);box-shadow:none;}
+  .btn.ghost:hover{background:var(--blue-bg);}
+  .btn.sm{font-size:14px;padding:11px 18px;}
+  .hide{display:none !important;}
+  .note-tip{margin-top:14px;font-size:13.5px;color:var(--muted);background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:10px;padding:11px 14px;line-height:1.55;}
+  .note-tip b{color:var(--amber);}
+  .qbar{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+  .qbar .prog{flex:1;height:9px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .qbar .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-deep));border-radius:99px;transition:width .3s;}
+  .qbar .pos{font-size:13.5px;font-weight:800;color:var(--blue-deep);white-space:nowrap;}
+  .qbar .scr{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;}
+  .qbar .scr b{color:var(--good);}
+  .qtag{display:inline-block;font-size:11.5px;font-weight:700;color:var(--blue-deep);background:var(--blue-bg);border-radius:7px;padding:4px 10px;margin:14px 0 12px;}
+  .qtext{font-size:18.5px;font-weight:700;line-height:1.5;margin:0 0 14px;letter-spacing:-.01em;white-space:pre-wrap;}
+  .qcode{font-family:var(--mono);font-size:14px;line-height:1.65;background:#1C2433;color:#E7ECF5;border-radius:11px;padding:13px 15px;margin:0 0 16px;white-space:pre;overflow-x:auto;}
+  .opts{display:flex;flex-direction:column;gap:10px;}
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;font-family:inherit;font-size:16px;font-weight:600;line-height:1.45;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:13px 16px;cursor:pointer;transition:.12s;}
+  .opt:hover:not(:disabled){border-color:var(--blue-chip);background:#FBFBFE;}
+  .opt:disabled{cursor:default;}
+  .opt .k{flex:0 0 auto;width:27px;height:27px;border-radius:8px;background:var(--blue-bg);color:var(--blue-deep);font-weight:800;font-size:14px;display:grid;place-items:center;transition:.12s;}
+  .opt .x{flex:1;}
+  .opt .mark{flex:0 0 auto;font-size:18px;font-weight:900;opacity:0;}
+  .opt.correct{border-color:var(--good-line);background:var(--good-bg);}
+  .opt.correct .k{background:var(--good);color:#fff;}
+  .opt.correct .mark{opacity:1;color:var(--good);}
+  .opt.wrong{border-color:var(--bad-line);background:var(--bad-bg);}
+  .opt.wrong .k{background:var(--bad);color:#fff;}
+  .opt.wrong .mark{opacity:1;color:var(--bad);}
+  .opt.dim{opacity:.5;}
+  .explain{margin-top:16px;border-radius:13px;padding:14px 17px;font-size:15.5px;line-height:1.6;background:var(--amber-bg);border:1px solid var(--amber-line);color:#5c4a1e;}
+  .explain.ok{background:var(--good-bg);border-color:var(--good-line);color:#1c5e3f;}
+  .explain .h{font-weight:800;font-size:12.5px;letter-spacing:.04em;display:block;margin-bottom:3px;text-transform:uppercase;}
+  .qfoot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;}
+  .qfoot .quit{font-size:13.5px;color:var(--faint);background:none;border:0;cursor:pointer;font-family:inherit;font-weight:600;}
+  .score-card{text-align:center;padding:14px 0 8px;}
+  .score-ring{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1;color:var(--blue-deep);}
+  .score-ring small{font-size:24px;color:var(--faint);font-weight:700;}
+  .score-sub{font-size:17px;font-weight:700;margin-top:8px;}
+  .score-msg{color:var(--muted);font-size:15px;margin-top:4px;}
+  .rev-h{font-size:13px;font-weight:800;letter-spacing:.05em;color:var(--bad);text-transform:uppercase;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
+  .rev-h .ln{flex:1;height:1px;background:var(--line);}
+  .rev{border:1px solid var(--line);border-left:4px solid var(--bad-line);border-radius:11px;padding:13px 15px;margin-bottom:10px;background:#fff;}
+  .rev.ok{border-left-color:var(--good-line);}
+  .rev .rq{font-size:15px;font-weight:700;line-height:1.45;margin-bottom:6px;white-space:pre-wrap;}
+  .rev .ans{font-size:14.5px;line-height:1.5;}
+  .rev .ans .lab{font-weight:800;font-size:12px;color:var(--faint);}
+  .rev .ans .co{color:var(--good);font-weight:800;}
+  .rev .ans .mine{color:var(--bad);font-weight:700;text-decoration:line-through;}
+  .rev .ex{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.55;padding-top:6px;border-top:1px dashed var(--line);}
+  details.allrev summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--blue-deep);padding:6px 0;list-style:none;}
+  details.allrev summary::-webkit-details-marker{display:none;}
+  details.allrev summary::before{content:"▸ ";color:var(--faint);}
+  details.allrev[open] summary::before{content:"▾ ";}
+  .result-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+  footer{border-top:1px solid var(--line);padding:22px 0 50px;color:var(--muted);font-size:13px;text-align:center;}
+  footer b{color:var(--ink);}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap hero-in">
+    <span class="eyebrow"><span class="dot"></span>응용 프로그래밍 개발 · 5지선다</span>
+    <h1 class="title">랜덤 <em>문제 뺑뺑이</em></h1>
+    <p class="sub">암기노트 기반 — <b>언어·리팩토링·보안·라이브러리·객체지향·SOLID·디자인 패턴</b>. 전부 5지선다이고 돌릴 때마다 <b>보기·표현이 새로</b> 섞여요.</p>
+  </div>
+</header>
+<main>
+<div class="wrap">
+  <div id="setup">
+    <div class="panel">
+      <p class="sec-label">1 · 범위 선택 <span class="ln"></span> <button class="link-btn" id="allToggle">전체 해제</button></p>
+      <div class="units" id="unitList"></div>
+    </div>
+    <div class="panel">
+      <p class="sec-label">2 · 문항 수 <span class="ln"></span></p>
+      <div class="seg" id="countSeg">
+        <button class="chip" data-n="10">10문제</button>
+        <button class="chip on" data-n="20">20문제</button>
+        <button class="chip" data-n="30">30문제</button>
+        <button class="chip" data-n="0">전체</button>
+      </div>
+      <div class="startbar">
+        <button class="btn" id="startBtn">시작하기 →</button>
+        <span class="countinfo" id="countInfo"></span>
+      </div>
+      <div class="note-tip">💡 끝나면 "새 문제로 다시"를 누르면 보기가 다시 섞여서 또 새로 출제돼요. 틀린 것만 골라 반복도 가능!</div>
+    </div>
+  </div>
+  <div id="quiz" class="hide">
+    <div class="panel">
+      <div class="qbar">
+        <span class="pos" id="qPos">1 / 10</span>
+        <span class="prog"><i id="qProg" style="width:0%"></i></span>
+        <span class="scr" id="qScore">맞음 <b>0</b></span>
+      </div>
+      <div id="qTag" class="qtag"></div>
+      <p class="qtext" id="qText"></p>
+      <pre class="qcode hide" id="qCode"></pre>
+      <div class="opts" id="qOpts"></div>
+      <div id="qExplain"></div>
+      <div class="qfoot">
+        <button class="quit" id="quitBtn">✕ 그만두고 범위 다시 고르기</button>
+        <button class="btn sm hide" id="nextBtn">다음 →</button>
+      </div>
+    </div>
+  </div>
+  <div id="result" class="hide">
+    <div class="panel">
+      <div class="score-card">
+        <div class="score-ring" id="scoreRing">0<small>/0</small></div>
+        <div class="score-sub" id="scoreSub"></div>
+        <div class="score-msg" id="scoreMsg"></div>
+      </div>
+      <div id="reviewWrap"></div>
+      <div class="result-btns">
+        <button class="btn sm hide" id="retryWrong">틀린 문제만 다시</button>
+        <button class="btn sm" id="retrySame">새 문제로 다시</button>
+        <button class="btn sm ghost" id="backSetup">범위 다시 고르기</button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+<footer><div class="wrap"><b>응용 프로그래밍 개발 5지선다 문제 풀이</b> · 언어·OOP·SOLID·디자인 패턴 · 보기 랜덤</div></footer>
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function ri(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function sample(a,k){return shuffle(a.slice()).slice(0,k);}
+function makeOpts(correct,wrongs){return shuffle([{text:String(correct),correct:true}].concat(wrongs.map(w=>({text:String(w),correct:false}))));}
+function S(topic,qs,correct,wrongs,e){return {topic,make(){return {q:pick(qs),code:null,opts:makeOpts(correct,sample(wrongs,4)),e};}};}
+
+const TOPICS=[
+  {id:'a1',name:'① 언어 분류'},
+  {id:'a2',name:'② 리팩토링·Bad Smell'},
+  {id:'a3',name:'③ 보안·분석 도구'},
+  {id:'a4',name:'④ 라이브러리·프레임워크'},
+  {id:'a5',name:'⑤ 구조적 프로그래밍·설계'},
+  {id:'a6',name:'⑥ 오류·코드 검토'},
+  {id:'a7',name:'⑦ 객체지향(OOP)'},
+  {id:'a8',name:'⑧ SOLID 설계원칙'},
+  {id:'a9',name:'⑨ 디자인 패턴·다이어그램'},
+];
+const TMAP={};TOPICS.forEach(t=>TMAP[t.id]=t);
+
+const BANK=[
+// a1 언어 분류
+S('a1',['컴파일 언어에 대한 설명으로 옳은 것은?','컴파일 방식을 바르게 설명한 것은?'],'소스코드를 기계어 실행 파일로 빌드(번역)하는 방식',['소스코드를 한 줄씩 번역하며 실행하는 방식','코드를 실행하지 않고 분석하는 방식','코드를 암호화하는 방식','코드를 자동 생성하는 방식','코드를 압축하는 방식'],'컴파일=전체를 기계어 실행 파일로 빌드 / 인터프리터=한 줄씩.'),
+S('a1',['인터프리터 언어에 대한 설명으로 옳은 것은?'],'소스코드를 한 줄씩 번역하여 실행하는 방식',['전체를 기계어 실행 파일로 빌드하는 방식','실행 파일이 반드시 필요하다','컴파일 언어보다 항상 빠르다','코드를 암호화한다','기계어를 직접 작성한다'],'인터프리터 = 한 줄씩 번역 실행.'),
+S('a1',['FORTRAN과 COBOL에 대한 설명으로 옳은 것은?'],'FORTRAN은 IBM의 과학적 계산용, COBOL은 미국 국방성이 개발',['둘 다 구글이 개발했다','FORTRAN은 게임용, COBOL은 웹용이다','COBOL은 과학 계산 전용이다','둘 다 스크립트 언어다','FORTRAN은 미국 국방성이 만들었다'],'FORTRAN=IBM(과학계산), COBOL=미국 국방성.'),
+S('a1',['다음 프로그래밍 언어 설명 중 옳은 것은?'],'C는 UNIX OS 구현에 사용되었고, PYTHON은 배우기 쉽고 이식성이 좋다',['C는 웹 전용 언어다','PYTHON은 기계어를 직접 작성한다','C는 인터프리터 언어다','PYTHON은 이식성이 나쁘다','C는 데이터베이스 언어다'],'C=UNIX 구현, PYTHON=쉽고 이식성 좋음.'),
+// a2 리팩토링
+S('a2',['리팩토링(Refactoring)이란?','리팩토링을 바르게 설명한 것은?'],'기능은 유지하면서 소스코드 내부 구조를 개선하는 것',['새로운 기능을 추가하는 것','버그를 새로 만드는 것','코드를 전부 삭제하는 것','프로그램을 실행하는 것','코드를 암호화하는 것'],'리팩토링 = 기능 유지 + 내부 구조 개선(가독성·성능·로직).'),
+S('a2',["'나쁜 냄새(Bad Smell)'란?"],'오류는 아니지만 문제를 유발하거나 설계 결함이 있는 부분',['컴파일 오류가 발생한 코드','실행 중 멈추는 코드','주석이 전혀 없는 코드','보안 취약점만을 의미','정상적으로 잘 작성된 코드'],'Bad Smell = 오류는 아니나 개선이 필요한(설계 결함) 부분.'),
+S('a2',['다음 중 Bad Smell 유형과 해결이 잘못 짝지어진 것은?'],'중복된 코드 → 그대로 둔다',['긴 메서드 → 분리한다','주석 → 코드로 이해되게 한다','미들 맨 → 위임만 담당하면 제거','스위치문 → 코드 중복 신호로 본다'],'중복된 코드는 제거가 답.'),
+// a3 보안·분석
+S('a3',['OWASP TOP 10이란?'],'웹 애플리케이션의 대표적인 취약점 10가지',['가장 빠른 정렬 알고리즘 10가지','인기 프로그래밍 언어 순위','운영체제 보안 등급','데이터베이스 명령어 10가지','네트워크 계층 모델'],'OWASP TOP 10 = 웹 앱 취약점 10가지.'),
+S('a3',['외부 입력이 코드나 쿼리로 실행되어 발생하는 취약점(SQL·명령어·XSS)은?'],'Injection',['Broken Access Control','Insecure Design','Security Misconfiguration','SSRF','Refactoring'],'Injection = 외부 입력이 코드/쿼리로 실행되는 취약점.'),
+S('a3',['정적 분석(Static Analysis)이란?'],'소프트웨어를 실행하지 않고 코드 레벨에서 분석하는 방법',['프로그램을 실행하며 분석하는 방법','사용자 행동을 분석하는 방법','네트워크 트래픽을 분석하는 방법','하드웨어를 분석하는 방법','데이터베이스를 백업하는 방법'],'정적 분석 = 실행하지 않고 코드 분석.'),
+S('a3',['코드 문제를 사전에 확인하는 정적 분석용 오픈소스 도구는?'],'PMD',['jQuery','Spring','Django','GPL','PyPI'],'PMD = 정적 분석용 오픈소스 도구.'),
+S('a3',['String의 불변성(Immutable)에 대한 설명으로 옳은 것은?'],"문자열 메모리 공간이 변하지 않아 '+'로 추가 시 새 객체를 생성한다",['문자열은 자유롭게 제자리에서 수정된다','문자열은 숫자만 담는다','불변성은 실행 속도를 항상 높인다','문자열은 메모리를 쓰지 않는다','문자열은 컴파일되지 않는다'],"String 불변 → '+' 연결 시 새 객체 생성(시간·자원 소모)."),
+// a4 라이브러리·패키지
+S('a4',['라이브러리(Library)란?'],'재사용·부품화를 위해 호출해 사용하는 모듈의 집합',['프로그램의 전체 표준 구조','운영체제의 한 종류','통신 규칙의 집합','데이터 저장소','CPU 명령어'],'Library = 호출해 쓰는 모듈 집합(jQuery, DLL, Jar 등).'),
+S('a4',['응용프로그램의 표준 구조를 구현하기 위한 클래스·라이브러리 모임으로 Spring, Django가 해당하는 것은?'],'프레임워크(Framework)',['라이브러리(Library)','플랫폼(Platform)','아키텍처(Architecture)','컴파일러','운영체제'],'Framework = 표준 구조 구현용(Spring, Django).'),
+S('a4',['라이브러리와 프레임워크의 차이로 옳은 것은?'],'라이브러리는 내가 호출해 쓰고, 프레임워크는 표준 구조(틀)를 제공한다',['둘은 완전히 같은 말이다','프레임워크가 더 작은 단위다','라이브러리는 운영체제다','프레임워크는 호출할 수 없다','라이브러리는 프로그래밍 언어다'],'Library=부품(호출), Framework=틀(표준 구조).'),
+S('a4',['프로그램 실행이 가능한 공통 실행 환경으로 Window, Linux, JVM이 해당하는 것은?'],'플랫폼(Platform)',['라이브러리','프레임워크','아키텍처','패키지','컴파일러'],'Platform = 공통 실행 환경.'),
+S('a4',['여러 컴퓨터 구성요소의 전반적 기계적 구조·설계 방법(모노리틱, MSA)을 뜻하는 것은?'],'아키텍처(Architecture)',['라이브러리','프레임워크','플랫폼','프로토콜','인덱스'],'Architecture = 전체 구조·설계(모노리틱, MSA).'),
+S('a4',['PyPI와 pip에 대한 설명으로 옳은 것은?'],'PyPI는 파이썬 패키지 저장소, pip는 패키지 설치 도구',['PyPI는 설치 도구, pip는 저장소다','둘 다 자료구조다','PyPI는 언어, pip는 OS다','pip는 웹 서버다','PyPI는 컴파일러다'],'PyPI=저장소, pip=설치 도구.'),
+// a5 구조적 프로그래밍·설계
+S('a5',['빔-야코피니(Böhm-Jacopini) 정리(1966)의 내용으로 옳은 것은?'],'순차·선택·반복 3가지 제어구조만으로 모든 알고리즘을 구현할 수 있다',['GOTO문이 가장 효율적이다','객체지향이 유일한 방법이다','반복문만으로 충분하다','함수는 필요 없다','재귀만으로 모든 것을 한다'],'빔-야코피니: 순차·선택·반복으로 모든 계산 가능.'),
+S('a5',["다익스트라가 'GOTO문은 해롭다(1968)'에서 주장한 내용은?"],'GOTO의 무분별한 사용이 프로그램 구조를 파괴한다',['GOTO를 많이 쓰면 빨라진다','GOTO는 객체지향의 핵심이다','GOTO 없이는 반복을 못 한다','GOTO는 보안을 높인다','GOTO는 컴파일을 빠르게 한다'],'다익스트라: GOTO 남용이 프로그램 구조를 파괴.'),
+S('a5',['하향식(top-down) 설계 4단계 순서로 옳은 것은?'],'문제 정의·요구사항 명세화 → 기능 분해·구조화 → 모듈별 상세 논리 설계 → 구현·검증',['구현 → 설계 → 요구사항 → 검증','기능 분해 → 문제 정의 → 검증 → 구현','테스트 → 구현 → 설계 → 정의','요구사항 → 구현 → 분해 → 설계','설계 → 정의 → 구현 → 분해'],'정의→분해·구조화→상세 설계→구현·검증.'),
+S('a5',['기능 분해·구조화의 효과로 옳은 것은?'],'각 기능을 독립 모듈(함수)로 나눠 재사용성·유지보수성이 높아진다',['코드가 한 덩어리가 되어 관리가 쉬워진다','실행 속도만 빨라진다','모듈 간 의존이 늘어난다','함수를 모두 없앤다','보안이 자동으로 해결된다'],'기능 분해 → 독립 모듈 → 재사용성·유지보수성↑.'),
+S('a5',['상향식(bottom-up) 구현·테스트의 순서로 옳은 것은?'],'단위 구현·단위 테스트 → 통합 구현·통합 테스트',['통합 테스트 → 단위 테스트','통합 구현 → 단위 구현','시스템 테스트 → 단위 구현','설계 → 단위 테스트','단위 테스트 → 요구 분석'],'상향식: 단위 → 통합.'),
+// a6 오류·코드 검토
+S('a6',['바이트코드(Bytecode)에 대한 설명으로 옳은 것은?'],'컴파일러가 소스를 특정 CPU 기계어가 아닌 중간언어로 생성한 것',['사람이 직접 작성하는 최종 기계어','네트워크 전송 단위','암호화된 문자열','데이터베이스 인덱스','운영체제 커널'],'바이트코드 = 중간언어(.class 등), 특정 CPU 기계어가 아님.'),
+S('a6',['컴파일 오류(Compile Error)에 대한 설명으로 옳은 것은?'],'컴파일 과정에서 컴파일러가 발견하는, 가장 기본적이고 발견하기 쉬운 오류',['실행 도중 발생하는 오류','사용자가 만드는 논리 오류','네트워크 오류','발견이 가장 어려운 오류','하드웨어 고장'],'컴파일 오류 = 컴파일 시 컴파일러가 발견(쉬움).'),
+S('a6',['런타임 오류(Runtime Error)란?'],'컴파일은 성공했지만 실행 도중 예기치 않은 문제로 비정상 종료되는 오류',['컴파일 단계에서 잡히는 오류','코드를 작성하기 전의 오류','주석에서 나는 오류','네트워크 연결 오류만 의미','항상 발견이 쉬운 오류'],'런타임 오류 = 실행 도중 비정상 종료(컴파일은 성공).'),
+S('a6',["'러버덕 디버깅(Rubber Duck Debugging)'이란?"],'오리 인형 등에게 코드를 설명하다 스스로 모순을 깨닫는 방법',['동료 두 명이 함께 작성하는 것','자동화 테스트 도구','코드를 무작위로 바꾸는 것','컴파일러가 자동 수정하는 것','코드를 삭제하는 것'],'러버덕 디버깅 = 설명하다 스스로 깨닫는 방법(코드 검토의 일종).'),
+// a7 객체지향
+S('a7',['객체지향의 캡슐화(Encapsulation)란?'],'속성과 행위를 하나로 묶고 구현 일부를 외부에 감추는(은닉) 것',['같은 함수가 상황에 따라 다르게 동작하는 것','부모의 기능을 물려받는 것','공통 특성만 모으는 것','객체를 하나만 만드는 것','코드를 압축하는 것'],'캡슐화 = 속성+행위 묶기 + 은닉.'),
+S('a7',['객체지향의 추상화(Abstraction)란?'],'공통적인 부분·관심 특성만 모은 것',['객체를 하나만 생성하는 것','부모 클래스를 상속하는 것','함수를 재정의하는 것','데이터를 암호화하는 것','구현을 숨기는 은닉'],'추상화 = 공통/관심 특성만 모음(인터페이스 정의 포함).'),
+S('a7',['같은 모양의 함수가 상황에 따라 다르게 동작하는(오버로딩·오버라이딩) 객체지향 특성은?'],'다형성(Polymorphism)',['캡슐화','추상화','상속','은닉화','정규화'],'다형성 = 같은 모양 함수가 다르게 동작(오버로딩·오버라이딩).'),
+S('a7',['부모 클래스에 새 기능을 추가해 자식 클래스를 만들어 사용하는 객체지향 기법은?'],'상속(Inheritance)',['캡슐화','추상화','다형성','인스턴스화','직렬화'],'상속 = 부모→자식으로 기능 확장.'),
+S('a7',['오버로딩(Overloading)과 오버라이딩(Overriding)의 차이로 옳은 것은?'],'오버로딩은 이름이 같고 매개변수를 다르게, 오버라이딩은 상위 메서드를 하위에서 재정의',['둘은 같은 말이다','오버로딩이 상위 메서드 재정의다','오버라이딩은 매개변수만 바꾼다','둘 다 상속과 무관하다','오버로딩은 변수 선언이다'],'오버로딩=매개변수 다르게, 오버라이딩=상위 메서드 재정의.'),
+// a8 SOLID
+S('a8',['단일 책임 원칙(SRP)의 내용으로 옳은 것은?'],'모든 클래스는 하나의 책임만 가져야 한다',['확장에 열려 있고 수정에 닫혀 있어야 한다','자식이 부모를 대체할 수 있어야 한다','사용하지 않는 인터페이스는 구현하지 않는다','추상에 의존해야 한다','한 클래스가 모든 기능을 가져야 한다'],'SRP = 하나의 책임만.'),
+S('a8',["'확장에는 열려 있고 수정에는 닫혀 있어야 한다'는 SOLID 원칙은?"],'개방-폐쇄 원칙(OCP)',['단일 책임 원칙(SRP)','리스코프 치환 원칙(LSP)','인터페이스 분리 원칙(ISP)','의존 역전 원칙(DIP)','정규화 원칙'],'OCP = 확장 OPEN, 수정 CLOSED.'),
+S('a8',["'자식 클래스는 부모 클래스를 대체할 수 있어야 한다'는 원칙은?"],'리스코프 치환 원칙(LSP)',['단일 책임 원칙(SRP)','개방-폐쇄 원칙(OCP)','인터페이스 분리 원칙(ISP)','의존 역전 원칙(DIP)','캡슐화 원칙'],'LSP = 부모 자리에 자식을 넣어도 정상 동작.'),
+S('a8',["'한 클래스는 자신이 사용하지 않는 인터페이스는 구현하지 말아야 한다'는 원칙은?"],'인터페이스 분리 원칙(ISP)',['단일 책임 원칙(SRP)','개방-폐쇄 원칙(OCP)','리스코프 치환 원칙(LSP)','의존 역전 원칙(DIP)','추상화 원칙'],'ISP = 안 쓰는 인터페이스는 구현 X.'),
+S('a8',["'변화가 없는 것(인터페이스·추상 클래스)에 의존해야 한다'는 원칙은?"],'의존 역전 원칙(DIP)',['단일 책임 원칙(SRP)','개방-폐쇄 원칙(OCP)','리스코프 치환 원칙(LSP)','인터페이스 분리 원칙(ISP)','다형성 원칙'],'DIP = 변하지 않는 추상(인터페이스)에 의존.'),
+// a9 디자인 패턴·다이어그램
+S('a9',['시퀀스 다이어그램(Sequence Diagram)이란?'],'객체 간 상호작용 메시지를 시간 흐름에 따라 나타내는 다이어그램',['클래스의 정적 구조를 나타내는 다이어그램','데이터베이스 테이블 관계도','네트워크 구성도','순서도','데이터 흐름만 표현하는 도표'],'시퀀스 = 객체 간 메시지를 시간 흐름으로 표현.'),
+S('a9',['다음 중 시퀀스 다이어그램의 구성요소로 보기 어려운 것은?'],'인덱스',['활성 객체(라이프라인)','메시지','활성 박스','라이프라인'],'구성요소: 활성 객체·메시지·활성 박스.'),
+S('a9',["서로 연관·의존적인 객체의 '조합'들을 만드는 인터페이스를 제공하는 디자인 패턴은?"],'추상 팩토리(Abstract Factory)',['싱글톤(Singleton)','팩토리 메서드(Factory Method)','옵저버(Observer)','어댑터(Adapter)','프록시(Proxy)'],'추상 팩토리 = 연관 객체 조합을 만드는 인터페이스 제공.'),
+S('a9',['객체 생성을 서브클래스로 분리해 처리하도록 캡슐화하는 디자인 패턴은?'],'팩토리 메서드(Factory Method)',['싱글톤(Singleton)','추상 팩토리(Abstract Factory)','데코레이터(Decorator)','스트래티지(Strategy)','빌더(Builder)'],'팩토리 메서드 = 객체 생성을 서브클래스로 분리.'),
+S('a9',["전역변수 없이 객체를 '하나만' 생성하여 어디서든 참조할 수 있게 하는 패턴은?"],'싱글톤(Singleton)',['팩토리 메서드(Factory Method)','추상 팩토리(Abstract Factory)','옵저버(Observer)','프로토타입(Prototype)','컴포지트(Composite)'],'싱글톤 = 객체 1개만 생성·어디서든 참조.'),
+S('a9',['스크립트 언어의 특징으로 옳은 것은?'],'인터프리터 언어이며 컴파일 언어보다 실행이 느리지만 빠르게 배우고 작성할 수 있다',['컴파일 언어보다 항상 빠르다','반드시 실행 파일을 빌드한다','기계어를 직접 작성한다','구문이 매우 복잡하다','객체를 만들 수 없다'],'스크립트 = 인터프리터, 실행은 느리나 작성이 빠름.'),
+];
+
+let selTopics=new Set(TOPICS.map(t=>t.id));
+let selCount=20;
+let quiz=[],idx=0,answered=[],lastEntries=null;
+function poolEntries(){return BANK.filter(e=>selTopics.has(e.topic));}
+function renderUnits(){const host=$('unitList');host.innerHTML='';TOPICS.forEach(t=>{const n=BANK.filter(e=>e.topic===t.id).length,on=selTopics.has(t.id);const el=document.createElement('label');el.className='uchk'+(on?' on':'');el.innerHTML=`<span class="box"></span><span class="t">${t.name}</span><span class="cnt">${n}</span>`;el.addEventListener('click',()=>{if(selTopics.has(t.id))selTopics.delete(t.id);else selTopics.add(t.id);el.classList.toggle('on');updateCount();});host.appendChild(el);});}
+function updateCount(){const avail=poolEntries().length,ask=selCount===0?avail:Math.min(selCount,avail);$('countInfo').innerHTML=avail===0?'단원을 1개 이상 골라주세요.':`선택 <b>${avail}</b>문제 중 <b>${ask}</b>문제 출제`;$('startBtn').disabled=avail===0;$('allToggle').textContent=selTopics.size===TOPICS.length?'전체 해제':'전체 선택';}
+$('allToggle').addEventListener('click',()=>{if(selTopics.size===TOPICS.length)selTopics.clear();else selTopics=new Set(TOPICS.map(t=>t.id));renderUnits();updateCount();});
+$('countSeg').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...$('countSeg').children].forEach(c=>c.classList.remove('on'));b.classList.add('on');selCount=parseInt(b.dataset.n,10);updateCount();});
+function buildQuiz(entries,n){const sh=shuffle(entries.slice());const chosen=n===0?sh:sh.slice(0,n);return chosen.map(entry=>({entry,inst:entry.make()}));}
+function startQuiz(entries,n){lastEntries=entries;quiz=buildQuiz(entries,n);idx=0;answered=[];show('quiz');renderQ();}
+function show(w){['setup','quiz','result'].forEach(s=>$(s).classList.toggle('hide',s!==w));window.scrollTo({top:0,behavior:'smooth'});}
+function renderQ(){const item=quiz[idx],inst=item.inst,t=TMAP[item.entry.topic],total=quiz.length;$('qPos').textContent=`${idx+1} / ${total}`;$('qProg').style.width=`${idx/total*100}%`;$('qScore').innerHTML=`맞음 <b>${answered.filter(a=>a.correct).length}</b>`;$('qTag').textContent=t.name;$('qText').textContent=inst.q;const cb=$('qCode');if(inst.code){cb.textContent=inst.code;cb.classList.remove('hide');}else cb.classList.add('hide');const host=$('qOpts');host.innerHTML='';const keys=['1','2','3','4','5'];inst.opts.forEach((op,i)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="k">${keys[i]}</span><span class="x otext"></span><span class="mark"></span>`;b.querySelector('.otext').textContent=op.text;b.addEventListener('click',()=>pick_(i));host.appendChild(b);});$('qExplain').innerHTML='';$('nextBtn').classList.add('hide');}
+function pick_(i){const item=quiz[idx],inst=item.inst;if(answered[idx])return;const correct=inst.opts[i].correct;answered[idx]={picked:i,correct};[...$('qOpts').children].forEach((b,bi)=>{b.disabled=true;const op=inst.opts[bi];if(op.correct){b.classList.add('correct');b.querySelector('.mark').textContent='✓';}else if(bi===i){b.classList.add('wrong');b.querySelector('.mark').textContent='✕';}else b.classList.add('dim');});$('qExplain').innerHTML=`<div class="explain ${correct?'ok':''}"><span class="h">${correct?'✓ 정답':'✕ 오답'} · 해설</span>${inst.e}</div>`;$('qScore').innerHTML=`맞음 <b>${answered.filter(a=>a.correct).length}</b>`;$('qProg').style.width=`${(idx+1)/quiz.length*100}%`;const nb=$('nextBtn');nb.textContent=idx===quiz.length-1?'결과 보기 →':'다음 →';nb.classList.remove('hide');nb.focus();}
+$('nextBtn').addEventListener('click',()=>{if(idx<quiz.length-1){idx++;renderQ();}else renderResult();});
+$('quitBtn').addEventListener('click',()=>show('setup'));
+document.addEventListener('keydown',e=>{if($('quiz').classList.contains('hide'))return;if(e.key==='Enter'&&!$('nextBtn').classList.contains('hide')){$('nextBtn').click();return;}const item=quiz[idx];if(!item||answered[idx])return;const map={'1':0,'2':1,'3':2,'4':3,'5':4};if(e.key in map&&map[e.key]<item.inst.opts.length)pick_(map[e.key]);});
+function renderResult(){show('result');const total=quiz.length,correct=answered.filter(a=>a.correct).length,pct=Math.round(correct/total*100);$('scoreRing').innerHTML=`${correct}<small>/${total}</small>`;$('scoreSub').textContent=`정답률 ${pct}%`;let msg;if(pct===100)msg='완벽! 보기 섞어서 한 번 더 굳히기 🎯';else if(pct>=80)msg='좋아요. 틀린 것만 다시 잡으면 끝!';else if(pct>=60)msg='절반 이상! 틀린 것 위주로 한 번 더.';else if(pct>=40)msg='암기노트 보고 다시 도전해봐요.';else msg='괜찮아요. 노트 보고 오답부터 다시!';$('scoreMsg').textContent=msg;const wrap=$('reviewWrap');wrap.innerHTML='';const wrongs=quiz.map((it,i)=>({it,i})).filter(x=>!answered[x.i].correct);if(wrongs.length){const h=document.createElement('div');h.className='rev-h';h.innerHTML=`✕ 틀린 문제 ${wrongs.length}개 <span class="ln"></span>`;wrap.appendChild(h);wrongs.forEach(({it,i})=>wrap.appendChild(revCard(it,i)));}const det=document.createElement('details');det.className='allrev';det.innerHTML=`<summary>전체 ${total}문제 다시 보기</summary>`;const all=document.createElement('div');all.style.marginTop='8px';quiz.forEach((it,i)=>all.appendChild(revCard(it,i)));det.appendChild(all);wrap.appendChild(det);$('retryWrong').classList.toggle('hide',wrongs.length===0);}
+function revCard(it,i){const inst=it.inst,ans=answered[i];const co=inst.opts.find(o=>o.correct).text,mine=inst.opts[ans.picked].text;const el=document.createElement('div');el.className='rev'+(ans.correct?' ok':'');let h=`<div class="rq"><span style="font-size:11px;font-weight:700;color:var(--faint);">[${TMAP[it.entry.topic].name}]</span>\n${inst.q}</div>`;h+=`<div class="ans"><span class="lab">정답 </span><span class="co">${co}</span>`;if(!ans.correct)h+=` &nbsp;<span class="lab">내 답 </span><span class="mine">${mine}</span>`;h+=`</div><div class="ex">${inst.e}</div>`;el.innerHTML=h;return el;}
+$('retrySame').addEventListener('click',()=>startQuiz(poolEntries(),selCount));
+$('retryWrong').addEventListener('click',()=>{const ent=quiz.filter((it,i)=>!answered[i].correct).map(it=>it.entry);startQuiz(ent,0);});
+$('backSetup').addEventListener('click',()=>show('setup'));
+$('startBtn').addEventListener('click',()=>startQuiz(poolEntries(),selCount));
+renderUnits();updateCount();
+</script>
+</body>
+</html>
