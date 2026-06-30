@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시스템 프로그래밍 · 5지선다 문제 풀이</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F7F5; --card:#FFFFFF; --ink:#16231F; --muted:#4E6058; --faint:#83968D;
+    --line:#E0E8E4; --line-soft:#ECF1EE;
+    --blue:#157F6B; --blue-deep:#0C5749; --blue-bg:#E3F2EE; --blue-chip:#CDE8E0;
+    --good:#1E8A55; --good-bg:#E4F3EB; --good-line:#9FD4B7;
+    --bad:#C0392B; --bad-bg:#F8E7E4; --bad-line:#E6B5AD;
+    --amber:#9A6610; --amber-bg:#FBF1D9; --amber-line:#E7CB87;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --shadow:0 1px 2px rgba(22,35,31,.05),0 10px 30px rgba(22,35,31,.07);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Pretendard",system-ui,-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:17.5px;line-height:1.7;-webkit-font-smoothing:antialiased;word-break:keep-all;}
+  .disp{font-family:"Space Grotesk","Pretendard",sans-serif;letter-spacing:-.01em;}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px;}
+  header.hero{background:radial-gradient(820px 320px at 85% -130px, rgba(21,127,107,.18), transparent 60%),linear-gradient(180deg,#fff,var(--paper));border-bottom:1px solid var(--line);}
+  .hero-in{padding:38px 0 26px;}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;letter-spacing:.12em;color:var(--blue-deep);background:var(--blue-chip);padding:6px 13px;border-radius:999px;text-transform:uppercase;}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);}
+  h1.title{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:clamp(26px,5vw,40px);line-height:1.12;margin:15px 0 6px;}
+  h1.title em{font-style:normal;color:var(--blue-deep);}
+  .sub{color:var(--muted);font-size:16px;margin:0;}
+  .sub b{color:var(--blue-deep);}
+  main{padding:26px 0 70px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:24px 26px;margin-bottom:20px;}
+  @media(max-width:560px){.panel{padding:19px 16px;}}
+  .sec-label{font-size:12.5px;font-weight:800;letter-spacing:.06em;color:var(--blue-deep);text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .sec-label .ln{flex:1;height:1px;background:var(--line);}
+  .units{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+  @media(max-width:520px){.units{grid-template-columns:1fr;}}
+  .uchk{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;cursor:pointer;transition:.14s;background:#fff;}
+  .uchk:hover{border-color:var(--blue-chip);background:#FAFCFB;}
+  .uchk.on{border-color:var(--blue);background:var(--blue-bg);}
+  .uchk .box{flex:0 0 auto;width:21px;height:21px;border:2px solid var(--line);border-radius:6px;display:grid;place-items:center;transition:.14s;}
+  .uchk.on .box{background:var(--blue);border-color:var(--blue);}
+  .uchk .box::after{content:"✓";color:#fff;font-size:13px;font-weight:900;opacity:0;transform:scale(.5);transition:.14s;}
+  .uchk.on .box::after{opacity:1;transform:scale(1);}
+  .uchk .t{font-size:14px;font-weight:700;line-height:1.3;}
+  .uchk .cnt{margin-left:auto;font-size:11px;font-weight:800;color:var(--blue-deep);background:#fff;border:1px solid var(--blue-chip);border-radius:20px;padding:2px 8px;}
+  .seg{display:inline-flex;gap:6px;flex-wrap:wrap;}
+  .chip{font-family:inherit;font-size:14px;font-weight:700;color:var(--blue-deep);background:#fff;border:1.5px solid var(--blue-chip);border-radius:10px;padding:9px 16px;cursor:pointer;transition:.14s;}
+  .chip:hover{background:var(--blue-bg);}
+  .chip.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+  .link-btn{background:none;border:0;color:var(--blue);font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;padding:4px;}
+  .startbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px;}
+  .countinfo{font-size:14px;color:var(--muted);font-weight:600;}
+  .countinfo b{color:var(--blue-deep);font-weight:800;}
+  .btn{font-family:inherit;font-size:16px;font-weight:800;color:#fff;background:var(--blue);border:0;border-radius:12px;padding:14px 26px;cursor:pointer;transition:.15s;box-shadow:0 3px 12px rgba(21,127,107,.28);}
+  .btn:hover{background:var(--blue-deep);}
+  .btn:active{transform:translateY(1px);}
+  .btn:disabled{background:#AFC2BB;box-shadow:none;cursor:not-allowed;}
+  .btn.ghost{background:#fff;color:var(--blue-deep);border:1.5px solid var(--blue-chip);box-shadow:none;}
+  .btn.ghost:hover{background:var(--blue-bg);}
+  .btn.sm{font-size:14px;padding:11px 18px;}
+  .hide{display:none !important;}
+  .note-tip{margin-top:14px;font-size:13.5px;color:var(--muted);background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:10px;padding:11px 14px;line-height:1.55;}
+  .note-tip b{color:var(--amber);}
+  .qbar{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+  .qbar .prog{flex:1;height:9px;background:var(--line);border-radius:99px;overflow:hidden;}
+  .qbar .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--blue-deep));border-radius:99px;transition:width .3s;}
+  .qbar .pos{font-size:13.5px;font-weight:800;color:var(--blue-deep);white-space:nowrap;}
+  .qbar .scr{font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;}
+  .qbar .scr b{color:var(--good);}
+  .qtag{display:inline-block;font-size:11.5px;font-weight:700;color:var(--blue-deep);background:var(--blue-bg);border-radius:7px;padding:4px 10px;margin:14px 0 12px;}
+  .qtext{font-size:18.5px;font-weight:700;line-height:1.5;margin:0 0 14px;letter-spacing:-.01em;white-space:pre-wrap;}
+  .qcode{font-family:var(--mono);font-size:14px;line-height:1.65;background:#1C2433;color:#E7ECF5;border-radius:11px;padding:13px 15px;margin:0 0 16px;white-space:pre;overflow-x:auto;}
+  .opts{display:flex;flex-direction:column;gap:10px;}
+  .opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;font-family:inherit;font-size:16px;font-weight:600;line-height:1.45;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:13px 16px;cursor:pointer;transition:.12s;}
+  .opt:hover:not(:disabled){border-color:var(--blue-chip);background:#FAFCFB;}
+  .opt:disabled{cursor:default;}
+  .opt .k{flex:0 0 auto;width:27px;height:27px;border-radius:8px;background:var(--blue-bg);color:var(--blue-deep);font-weight:800;font-size:14px;display:grid;place-items:center;transition:.12s;}
+  .opt .x{flex:1;}
+  .opt .mark{flex:0 0 auto;font-size:18px;font-weight:900;opacity:0;}
+  .opt.correct{border-color:var(--good-line);background:var(--good-bg);}
+  .opt.correct .k{background:var(--good);color:#fff;}
+  .opt.correct .mark{opacity:1;color:var(--good);}
+  .opt.wrong{border-color:var(--bad-line);background:var(--bad-bg);}
+  .opt.wrong .k{background:var(--bad);color:#fff;}
+  .opt.wrong .mark{opacity:1;color:var(--bad);}
+  .opt.dim{opacity:.5;}
+  .explain{margin-top:16px;border-radius:13px;padding:14px 17px;font-size:15.5px;line-height:1.6;background:var(--amber-bg);border:1px solid var(--amber-line);color:#5c4a1e;}
+  .explain.ok{background:var(--good-bg);border-color:var(--good-line);color:#1c5e3f;}
+  .explain .h{font-weight:800;font-size:12.5px;letter-spacing:.04em;display:block;margin-bottom:3px;text-transform:uppercase;}
+  .qfoot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:10px;}
+  .qfoot .quit{font-size:13.5px;color:var(--faint);background:none;border:0;cursor:pointer;font-family:inherit;font-weight:600;}
+  .score-card{text-align:center;padding:14px 0 8px;}
+  .score-ring{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:52px;line-height:1;color:var(--blue-deep);}
+  .score-ring small{font-size:24px;color:var(--faint);font-weight:700;}
+  .score-sub{font-size:17px;font-weight:700;margin-top:8px;}
+  .score-msg{color:var(--muted);font-size:15px;margin-top:4px;}
+  .rev-h{font-size:13px;font-weight:800;letter-spacing:.05em;color:var(--bad);text-transform:uppercase;margin:22px 0 12px;display:flex;align-items:center;gap:8px;}
+  .rev-h .ln{flex:1;height:1px;background:var(--line);}
+  .rev{border:1px solid var(--line);border-left:4px solid var(--bad-line);border-radius:11px;padding:13px 15px;margin-bottom:10px;background:#fff;}
+  .rev.ok{border-left-color:var(--good-line);}
+  .rev .rq{font-size:15px;font-weight:700;line-height:1.45;margin-bottom:6px;white-space:pre-wrap;}
+  .rev .ans{font-size:14.5px;line-height:1.5;}
+  .rev .ans .lab{font-weight:800;font-size:12px;color:var(--faint);}
+  .rev .ans .co{color:var(--good);font-weight:800;}
+  .rev .ans .mine{color:var(--bad);font-weight:700;text-decoration:line-through;}
+  .rev .ex{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.55;padding-top:6px;border-top:1px dashed var(--line);}
+  details.allrev summary{cursor:pointer;font-size:14px;font-weight:700;color:var(--blue-deep);padding:6px 0;list-style:none;}
+  details.allrev summary::-webkit-details-marker{display:none;}
+  details.allrev summary::before{content:"▸ ";color:var(--faint);}
+  details.allrev[open] summary::before{content:"▾ ";}
+  .result-btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+  footer{border-top:1px solid var(--line);padding:22px 0 50px;color:var(--muted);font-size:13px;text-align:center;}
+  footer b{color:var(--ink);}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap hero-in">
+    <span class="eyebrow"><span class="dot"></span>시스템 프로그래밍 · 5지선다</span>
+    <h1 class="title">랜덤 <em>문제 뺑뺑이</em></h1>
+    <p class="sub">암기노트 기반 — <b>SQL 활용 · 네트워크(OSI) · 운영체제/개발환경</b>. 전부 5지선다 객관식이고, 돌릴 때마다 <b>보기·표현이 새로</b> 섞여서 나와요.</p>
+  </div>
+</header>
+<main>
+<div class="wrap">
+  <div id="setup">
+    <div class="panel">
+      <p class="sec-label">1 · 범위 선택 <span class="ln"></span> <button class="link-btn" id="allToggle">전체 해제</button></p>
+      <div class="units" id="unitList"></div>
+    </div>
+    <div class="panel">
+      <p class="sec-label">2 · 문항 수 <span class="ln"></span></p>
+      <div class="seg" id="countSeg">
+        <button class="chip" data-n="10">10문제</button>
+        <button class="chip on" data-n="20">20문제</button>
+        <button class="chip" data-n="30">30문제</button>
+        <button class="chip" data-n="0">전체</button>
+      </div>
+      <div class="startbar">
+        <button class="btn" id="startBtn">시작하기 →</button>
+        <span class="countinfo" id="countInfo"></span>
+      </div>
+      <div class="note-tip">💡 끝나면 "새 문제로 다시"를 누르면 보기가 다시 섞여서 또 새로 출제돼요. 틀린 것만 골라 반복도 가능!</div>
+    </div>
+  </div>
+  <div id="quiz" class="hide">
+    <div class="panel">
+      <div class="qbar">
+        <span class="pos" id="qPos">1 / 10</span>
+        <span class="prog"><i id="qProg" style="width:0%"></i></span>
+        <span class="scr" id="qScore">맞음 <b>0</b></span>
+      </div>
+      <div id="qTag" class="qtag"></div>
+      <p class="qtext" id="qText"></p>
+      <pre class="qcode hide" id="qCode"></pre>
+      <div class="opts" id="qOpts"></div>
+      <div id="qExplain"></div>
+      <div class="qfoot">
+        <button class="quit" id="quitBtn">✕ 그만두고 범위 다시 고르기</button>
+        <button class="btn sm hide" id="nextBtn">다음 →</button>
+      </div>
+    </div>
+  </div>
+  <div id="result" class="hide">
+    <div class="panel">
+      <div class="score-card">
+        <div class="score-ring" id="scoreRing">0<small>/0</small></div>
+        <div class="score-sub" id="scoreSub"></div>
+        <div class="score-msg" id="scoreMsg"></div>
+      </div>
+      <div id="reviewWrap"></div>
+      <div class="result-btns">
+        <button class="btn sm hide" id="retryWrong">틀린 문제만 다시</button>
+        <button class="btn sm" id="retrySame">새 문제로 다시</button>
+        <button class="btn sm ghost" id="backSetup">범위 다시 고르기</button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+<footer><div class="wrap"><b>시스템 프로그래밍 5지선다 문제 풀이</b> · SQL · 네트워크 · OS/개발환경 · 보기 랜덤</div></footer>
+<script>
+const $=id=>document.getElementById(id);
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function ri(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function sample(a,k){return shuffle(a.slice()).slice(0,k);}
+function makeOpts(correct,wrongs){return shuffle([{text:String(correct),correct:true}].concat(wrongs.map(w=>({text:String(w),correct:false}))));}
+function distinctWrongs(correct,genOne,k){const seen=new Set([String(correct)]),out=[];let g=0;while(out.length<k&&g++<400){const w=String(genOne());if(!seen.has(w)){seen.add(w);out.push(w);}}let p=2;while(out.length<k){const w=String(correct)+' ('+p+')';if(!seen.has(w)){seen.add(w);out.push(w);}p++;}return out;}
+function S(topic,qs,correct,wrongs,e){return {topic,make(){return {q:pick(qs),code:null,opts:makeOpts(correct,sample(wrongs,4)),e};}};}
+function G(topic,fn){return {topic,make:fn};}
+function genCrossJoin(){const a=ri(3,9),b=ri(4,12),correct=a*b;const wrongs=distinctWrongs(correct,()=>{const r=Math.random();if(r<0.4)return a+b;if(r<0.7)return correct+pick([-a,-b,a,b,-1,1]);return ri(2,12)*ri(2,12);},4);return {q:`크로스 조인(Cross Join)에서 한 테이블이 ${a}건, 다른 테이블이 ${b}건일 때 결과 행의 수는?`,code:null,opts:makeOpts(correct,wrongs),e:`크로스 조인 = 모든 경우의 수 = ${a} × ${b} = ${correct}건`};}
+
+const TOPICS=[
+  {id:'t1',name:'① SQL · 데이터 사전'},
+  {id:'t2',name:'② SQL · DDL'},
+  {id:'t3',name:'③ SQL · 조인·서브쿼리'},
+  {id:'t4',name:'④ SQL · DCL·TCL·트랜잭션'},
+  {id:'t5',name:'⑤ SQL · 인덱스·뷰'},
+  {id:'t6',name:'⑥ 네트워크 · 프로토콜·OSI'},
+  {id:'t7',name:'⑦ 네트워크 · 계층·캡슐화'},
+  {id:'t8',name:'⑧ OS · 개념·종류'},
+  {id:'t9',name:'⑨ OS · 프로세스·개발환경'},
+];
+const TMAP={};TOPICS.forEach(t=>TMAP[t.id]=t);
+
+const BANK=[
+// t1 데이터 사전
+S('t1',['데이터 사전(Data Dictionary)에 대한 설명으로 옳은 것은?','데이터 사전을 바르게 설명한 것은?'],'DB의 실제 데이터를 제외한 모든 정보(메타데이터)를 담은 곳',['실제 사용자 데이터를 저장하는 테이블','백업 파일을 모아둔 저장소','사용자가 직접 작성하는 SQL 모음','인덱스만 따로 저장하는 공간','네트워크 통신 규칙의 집합'],'데이터 사전 = 메타데이터(DBMS가 관리하는 데이터)를 담은 곳.'),
+S('t1',['데이터 사전의 내용을 변경할 수 있는 권한을 가진 주체는?','데이터 사전을 수정할 수 있는 것은?'],'시스템(DBMS)',['모든 일반 사용자','일반 사용자 누구나','응용 프로그램','네트워크 관리자','데이터 입력 담당자'],'데이터 사전 변경 권한은 시스템만 가짐(일반 사용자 X).'),
+S('t1',['다음 중 메타데이터의 유형으로 보기 어려운 것은?','메타데이터에 해당하지 않는 것은?'],'실제 사용자가 입력한 업무 데이터',['사용자 정보','데이터베이스 객체','무결성 제약 상태','함수·프로시저·트리거 정보'],'메타데이터 = 사용자정보·객체·무결성 제약·함수/프로시저/트리거. 실제 데이터는 제외.'),
+S('t1',['메타데이터 구성에 대한 설명으로 옳은 것은?'],'메타데이터라는 점은 모든 DBMS 공통이나 구성 내용은 제품마다 다르다',['모든 DBMS가 완전히 동일한 구성을 가진다','제품마다 메타데이터 개념 자체가 다르다','메타데이터는 표준이 없어 비교가 불가능하다','오직 한 종류의 DBMS에만 존재한다','사용자가 자유롭게 구조를 바꾼다'],'메타데이터라는 점은 공통, 구성 내용은 제품마다 다름.'),
+// t2 DDL
+S('t2',['DDL(데이터 정의어)의 개념으로 옳은 것은?','DDL을 바르게 설명한 것은?'],"데이터를 담을 그릇(오브젝트)을 생성하는 언어",['데이터를 조회·검색하는 언어','권한을 부여·회수하는 언어','트랜잭션을 제어하는 언어','데이터를 삽입·수정·삭제하는 언어','통신 규칙을 정의하는 언어'],'DDL = 데이터를 정의(오브젝트 생성)하는 언어.'),
+S('t2',['DDL 명령어 설명으로 옳은 것은?'],'TRUNCATE는 내용을 삭제하며 데이터베이스 로깅 작업을 건너뛴다',['ALTER는 테이블을 완전히 삭제한다','TRUNCATE는 권한을 회수한다','ALTER는 트랜잭션을 확정한다','TRUNCATE는 테이블 구조를 변경한다','ALTER는 데이터를 조회한다'],'ALTER=오브젝트 변경, TRUNCATE=내용 삭제(로깅 건너뜀).'),
+S('t2',['테이블 변경(ALTER) 시 명령이 바르게 짝지어진 것은?'],'열 추가 ADD · 타입 변경 MODIFY · 열 삭제 DROP',['열 추가 INSERT · 타입 변경 CHANGE · 열 삭제 REMOVE','열 추가 ADD · 타입 변경 UPDATE · 열 삭제 DELETE','열 추가 NEW · 타입 변경 MODIFY · 열 삭제 DROP','열 추가 CREATE · 타입 변경 ALTER · 열 삭제 ERASE','열 추가 ADD · 타입 변경 SET · 열 삭제 CUT'],'ALTER: 추가 ADD, 타입 변경 MODIFY, 삭제 DROP.'),
+S('t2',["테이블의 '내용만' 삭제(절단)하는 명령은?",'테이블 데이터를 모두 비우되 구조는 남기는 명령은?'],'TRUNCATE TABLE',['DROP TABLE','DELETE COLUMN','RENAME TABLE','ALTER TABLE','REMOVE TABLE'],'TRUNCATE TABLE=내용 삭제(절단), DROP TABLE=테이블 삭제.'),
+S('t2',['테이블 이름을 변경하는 명령으로 옳은 것은?'],'RENAME TABLE 이전이름 TO 새이름',['ALTER TABLE 이전이름 SET 새이름','CHANGE TABLE 이전이름 새이름','MODIFY TABLE 이전이름 TO 새이름','UPDATE TABLE 이전이름 새이름','DROP TABLE 이전이름 TO 새이름'],'RENAME TABLE 이전 TO 새이름.'),
+// t3 조인·서브쿼리
+S('t3',['조인(Join)에 대한 설명으로 옳은 것은?','조인을 바르게 설명한 것은?'],'두 테이블을 결합(교집합)하여 결과를 얻는 방법',['하나의 테이블을 여러 개로 분리하는 것','테이블의 행을 정렬하는 것','중복 행을 제거하는 것','권한을 부여하는 것','인덱스를 생성하는 것'],'조인 = 두 테이블 결합(관계형 DB의 핵심 기능).'),
+G('t3',genCrossJoin),
+S('t3',['두 테이블의 공통 데이터를 추출하는 동등 조인을 WHERE로 표현한 것으로 옳은 것은?'],'FROM 고객, 주문 WHERE 고객.고객번호 = 주문.고객번호',['FROM 고객, 주문 WHERE 고객.고객번호 <> 주문.고객번호','FROM 고객 ONLY 주문','FROM 고객, 주문 (조건 없음)','SELECT 고객 INNER 주문','FROM 고객 WHERE 주문'],'동등 조인: WHERE 공통칼럼 = 공통칼럼.'),
+S('t3',['INNER JOIN의 ON 절 사용으로 옳은 것은?'],'FROM 고객 INNER JOIN 주문 ON 고객.고객번호 = 주문.고객번호',['FROM 고객 INNER JOIN 주문 WHERE 고객.고객번호','FROM 고객 INNER 주문 ON 고객번호','FROM 고객 JOIN 주문 IN 고객번호','FROM 고객 INNER JOIN 주문 USING WHERE','SELECT 고객 INNER JOIN 주문'],'INNER JOIN ... ON 공통칼럼 = 공통칼럼.'),
+S('t3',['서브쿼리(Sub-Query)란?','서브쿼리를 바르게 설명한 것은?'],'메인쿼리 안에 포함된 쿼리',['여러 쿼리를 동시에 실행하는 것','두 테이블을 결합하는 쿼리','권한을 제어하는 쿼리','쿼리의 실행 계획','백업용 쿼리'],'서브쿼리 = 메인쿼리 안에 포함된 쿼리.'),
+S('t3',['다중 행(multiple row) 서브쿼리에서 사용하는 연산자로 옳게 묶인 것은?'],'IN, EXISTS, ALL, ANY',['=, <, >, <>','+, -, *, /','AND, OR, NOT','JOIN, ON, USING','COMMIT, ROLLBACK'],'단일 행(=,<,>,<>) / 다중 행(IN, EXISTS, ALL, ANY).'),
+// t4 DCL·TCL
+S('t4',['DCL(데이터 제어어) 명령으로 옳게 묶인 것은?'],'GRANT, REVOKE',['COMMIT, ROLLBACK','INSERT, UPDATE','CREATE, DROP','SELECT, FROM','ADD, MODIFY'],'DCL = GRANT(권한 부여)·REVOKE(권한 회수).'),
+S('t4',["권한을 '회수'하는 DCL 명령은?"],'REVOKE',['GRANT','COMMIT','ROLLBACK','DROP','DELETE'],'GRANT=부여, REVOKE=회수.'),
+S('t4',['다음 중 TCL(트랜잭션 제어어) 명령에 해당하지 않는 것은?'],'GRANT',['COMMIT','ROLLBACK','CHECKPOINT','SAVEPOINT'],'TCL=COMMIT·ROLLBACK·CHECKPOINT(SAVEPOINT). GRANT는 DCL.'),
+S('t4',['변경 사항을 취소하고 이전 상태로 되돌리는 TCL 명령은?'],'ROLLBACK',['COMMIT','GRANT','SAVEPOINT','TRUNCATE','REVOKE'],'COMMIT=확정, ROLLBACK=취소.'),
+S('t4',['트랜잭션(Transaction)의 정의로 옳은 것은?'],'일을 처리하는 단위 = 논리적인 연산 단위',['데이터를 저장하는 물리적 공간','테이블을 결합하는 방법','권한의 집합','네트워크 패킷의 단위','인덱스의 한 종류'],'트랜잭션 = 논리적인 연산(작업 처리) 단위.'),
+S('t4',['DCL과 TCL을 서로 다른 개념으로 구분하는 이유는?'],'작업 대상이 서로 다르기 때문',['명령어 개수가 다르기 때문','사용하는 DBMS가 다르기 때문','실행 속도가 다르기 때문','둘 중 하나만 표준이기 때문','권한이 같기 때문'],'작업 대상이 상이하여 구분.'),
+// t5 인덱스·뷰
+S('t5',['인덱스(Index)의 목적으로 옳은 것은?'],'저장된 데이터를 빠르게 검색해 테이블 조회 속도를 높임',['데이터를 암호화한다','테이블을 결합한다','권한을 부여한다','중복 데이터를 자동 삭제한다','트랜잭션을 확정한다'],'인덱스 = 빠른 검색용 자료구조(조회 속도↑).'),
+S('t5',['인덱스를 생성하는 SQL로 옳은 것은?'],'CREATE [UNIQUE] INDEX 인덱스명 ON 테이블명(칼럼명);',['CREATE INDEX 테이블명 ON 인덱스명;','ADD INDEX 인덱스명 TO 테이블명;','ALTER INDEX 인덱스명 ON 칼럼명;','INSERT INDEX 인덱스명;','MAKE INDEX ON 테이블명;'],'CREATE [UNIQUE] INDEX 명 ON 테이블(칼럼).'),
+S('t5',['인덱스를 삭제하는 명령은?'],'DROP INDEX 인덱스명;',['DELETE INDEX 인덱스명;','REMOVE INDEX 인덱스명;','TRUNCATE INDEX 인덱스명;','ALTER INDEX 인덱스명;','ERASE INDEX 인덱스명;'],'삭제 DROP INDEX, 변경 ALTER INDEX.'),
+S('t5',['뷰(View)에 대한 설명으로 옳은 것은?'],'기본 테이블에서 유도된 가상 테이블로 물리적으로 존재하지 않는다',['물리적으로 데이터를 저장하는 실제 테이블이다','인덱스의 한 종류이다','백업 파일이다','사용자 권한 목록이다','트랜잭션 로그이다'],'뷰 = 기본 테이블에서 유도된 가상 테이블(물리적으로 없지만 테이블처럼 간주).'),
+// t6 프로토콜·OSI
+S('t6',['프로토콜(Protocol)이란?'],'통신을 통제하는 규칙들을 모아 놓은 것',['데이터를 저장하는 장치','네트워크 케이블의 종류','암호화 알고리즘','운영체제의 한 종류','데이터베이스 언어'],'프로토콜 = 통신 규칙의 집합.'),
+S('t6',['OSI 7계층 모델에 대한 설명으로 옳은 것은?'],'ISO가 만든 이론적 네트워크 모델',['실제 인터넷에서 쓰이는 상용 모델','마이크로소프트가 만든 모델','데이터베이스 표준','암호화 표준','프로그래밍 언어 규격'],'OSI 7계층 = ISO가 만든 이론적 모델 / 상용화 = TCP/IP.'),
+S('t6',['실제로 상용화되어 인터넷에서 쓰이는 네트워크 모델은?'],'TCP/IP 모델',['OSI 7계층 모델','ISO 모델','DNS 모델','HTTP 모델','UDP 모델'],'OSI=이론적 모델, TCP/IP=상용화 모델.'),
+S('t6',['OSI 7계층 중 사용자에게 직접 서비스를 제공하고 입출력을 정의하는 계층은?'],'응용(Application) 계층',['표현(Presentation) 계층','세션(Session) 계층','전송(Transport) 계층','네트워크 계층','데이터링크 계층'],'7계층=응용(사용자 서비스 제공).'),
+S('t6',['인코딩·암호화·압축·코드 변환을 담당하는 OSI 계층은?'],'표현(Presentation) 계층',['응용(Application) 계층','세션(Session) 계층','전송 계층','네트워크 계층','물리 계층'],'6계층=표현(데이터 표현 변환·암호화·압축).'),
+S('t6',['송수신지의 프로세스 간 연결을 관리하는 OSI 계층은?'],'세션(Session) 계층',['응용 계층','표현 계층','네트워크 계층','전송 계층','데이터링크 계층'],'5계층=세션(프로세스 간 연결 관리).'),
+S('t6',['최적 경로를 탐색하는 OSI 계층은?'],'네트워크(Network) 계층',['전송 계층','세션 계층','응용 계층','데이터링크 계층','물리 계층'],'네트워크 계층=최적 경로 탐색.'),
+// t7 계층 프로토콜·캡슐화
+S('t7',['다음 중 응용 계층 프로토콜로 옳게 묶인 것은?'],'HTTP, HTTPS, FTP',['TCP, UDP, IP','IP, ARP, ICMP','Ethernet, Wi-Fi','COMMIT, ROLLBACK','ADD, DROP'],'응용계층: HTTP·HTTPS·FTP.'),
+S('t7',['HTTPS에 대한 설명으로 옳은 것은?'],'HTTP에 TLS/SSL 암호화를 더한 프로토콜',['파일 전송 전용 프로토콜','메일 수신 프로토콜','IP 주소 할당 프로토콜','HTTP보다 느린 옛 버전','암호화가 없는 HTTP'],'HTTPS = HTTP + TLS/SSL 암호화. (FTP=파일 전송)'),
+S('t7',['수신 확인 신호(Acknowledgment)를 주고받아 오류·손실을 처리하는 전송계층 프로토콜은?'],'TCP',['UDP','IP','HTTP','FTP','ARP'],'TCP=수신 확인·오류제어 O / UDP=수신 확인 없음.'),
+S('t7',['수신 확인 과정이 없어 오류·손실 데이터를 처리하지 않는 전송계층 프로토콜은?'],'UDP',['TCP','IP','HTTP','SMTP','FTP'],'UDP=수신 확인·오류 처리 없음(빠름).'),
+S('t7',['인터넷(네트워크) 계층의 대표 프로토콜은?'],'IP (Internet Protocol)',['TCP','HTTP','FTP','SMTP','UDP'],'네트워크 계층 대표 = IP.'),
+S('t7',['메일·주소 관련 프로토콜로 옳게 묶인 것은?'],'DHCP, SMTP, POP3, IMAP',['HTTP, FTP, TCP','IP, ARP, ICMP','TLS, SSL, HTTPS','COMMIT, GRANT','ADD, MODIFY'],'메일·주소: DHCP·SMTP·POP3·IMAP.'),
+S('t7',['PDU(Protocol Data Unit)에 대한 설명으로 옳은 것은?'],'각 계층에서 쓰는 데이터 단위 (Frame, Packet, Segment)',['네트워크 케이블의 길이 단위','암호화 키의 단위','데이터베이스 저장 단위','CPU 처리 속도 단위','권한의 단위'],'PDU = 계층별 데이터 단위(Frame/Packet/Segment).'),
+S('t7',['네트워크에서 캡슐화(Encapsulation)란?'],'데이터가 하위 계층으로 가면서 헤더(추가 정보)를 붙이는 것',['데이터를 암호화하는 것','데이터를 압축하는 것','상위 계층으로 갈수록 헤더를 떼는 것','데이터를 여러 조각으로 분할하는 것','데이터를 정렬하는 것'],'캡슐화 = 하위 계층으로 내려가며 헤더 추가.'),
+// t8 OS 개념·종류
+S('t8',['운영체제(OS)에 대한 설명으로 옳은 것은?'],'컴퓨터의 H/W와 S/W 기능을 사용할 수 있게 해주는 시스템 SW',['문서를 작성하는 응용 SW','네트워크 통신 규칙','데이터베이스 언어','프로그래밍 언어','웹 브라우저'],'OS = H/W·S/W를 쓸 수 있게 하는 시스템 SW.'),
+S('t8',['다음 중 운영체제의 목적으로 보기 어려운 것은?'],'소스코드 자동 작성',['처리 능력 향상','응답시간 단축','신뢰도 향상','사용자–시스템 인터페이스 제공'],'OS 목적: 처리능력↑·응답시간↓·신뢰도↑·인터페이스 제공.'),
+S('t8',['오픈소스(무료)로 자유롭게 사용·수정·배포할 수 있고 서버·슈퍼컴퓨터·임베디드에 주로 쓰이는 OS는?'],'Linux',['Windows','UNIX','iOS','macOS','Android'],'Linux = 오픈소스(무료), 서버·임베디드.'),
+S('t8',['대용량 처리·안정성이 요구되는 서버용으로 IBM·HP 등이 제공하는 유료 OS는?'],'UNIX',['Linux','Windows','Android','iOS','DOS'],'UNIX = 서버용, 유료(IBM·HP).'),
+S('t8',['마이크로소프트(MS)의 유료 OS로 직관적 GUI를 제공하며 개인용 PC에 주로 쓰이는 것은?'],'Windows',['Linux','UNIX','iOS','Android','Chrome OS'],'Windows = MS, 유료, 직관적 GUI.'),
+S('t8',['CLI와 GUI에 대한 설명으로 옳은 것은?'],'CLI는 명령어를 직접 입력, GUI는 마우스로 윈도우에서 실행한다',['CLI는 마우스 기반, GUI는 명령어 기반이다','둘 다 명령어만 사용한다','CLI가 GUI보다 항상 느리다','GUI는 서버에서만 쓴다','CLI는 그래픽 전용이다'],'CLI=명령어 입력, GUI=마우스/윈도우.'),
+S('t8',['iOS와 Android에 대한 설명으로 옳은 것은?'],'iOS는 애플의 하드웨어 번들, Android는 구글이 만든 무료 OS',['둘 다 마이크로소프트 제품이다','iOS는 무료, Android는 유료다','둘 다 오픈소스가 아니다','Android는 애플, iOS는 구글이다','둘 다 서버 전용이다'],'iOS=애플(번들), Android=구글(무료).'),
+// t9 프로세스·개발환경
+S('t9',['프로세스(Process)의 정의로 옳은 것은?'],'실행 중이거나 곧 실행 가능한 프로그램으로 OS 내에 PCB를 가진다',['디스크에 저장된 실행 전 파일','프로그래밍 언어의 한 종류','CPU의 한 부품','네트워크 패킷','데이터베이스 객체'],'프로세스 = 실행 중/실행 가능 프로그램(PCB 보유).'),
+S('t9',['프로세스 상태(State) 전이 순서로 옳은 것은?'],'제출 → 보류 → 준비 → 실행 → 대기 → 완료',['준비 → 제출 → 실행 → 보류 → 완료','실행 → 준비 → 대기 → 제출 → 완료','제출 → 실행 → 준비 → 대기 → 완료','보류 → 완료 → 실행 → 준비 → 대기','제출 → 준비 → 대기 → 보류 → 완료'],'제출→보류→준비→실행→대기→완료.'),
+S('t9',['개발 환경 구성에 대한 설명으로 옳은 것은?'],'설치하는 OS에 따라 웹서버·DB·프로그래밍 언어가 달라질 수 있다',['OS와 무관하게 항상 동일하다','웹서버는 OS를 가리지 않고 하나뿐이다','DB는 OS마다 고정된다','프로그래밍 언어는 OS가 정해준다','개발 환경은 변경할 수 없다'],'설치 OS에 따라 웹서버·DB·언어가 달라질 수 있음.'),
+S('t9',['개발 도구 선정 시 고려사항으로 보기 어려운 것은?'],'개발자의 개인 취미',['OS 호환성·충돌 여부','도구 버전 확인','(상용) 라이선스 수량','보안을 위한 최신 패치 여부'],'고려사항: 호환성·버전·라이선스·보안 패치.'),
+S('t9',['일반적인 개발환경 구성요소에 해당하지 않는 것은?'],'사용자 매뉴얼',['통합개발도구(IDE)','웹 서버','DBMS','형상관리 도구'],'개발환경 구성요소: IDE·Web서버·DBMS·형상관리 등.'),
+];
+
+let selTopics=new Set(TOPICS.map(t=>t.id));
+let selCount=20;
+let quiz=[],idx=0,answered=[],lastEntries=null;
+function poolEntries(){return BANK.filter(e=>selTopics.has(e.topic));}
+function renderUnits(){const host=$('unitList');host.innerHTML='';TOPICS.forEach(t=>{const n=BANK.filter(e=>e.topic===t.id).length,on=selTopics.has(t.id);const el=document.createElement('label');el.className='uchk'+(on?' on':'');el.innerHTML=`<span class="box"></span><span class="t">${t.name}</span><span class="cnt">${n}</span>`;el.addEventListener('click',()=>{if(selTopics.has(t.id))selTopics.delete(t.id);else selTopics.add(t.id);el.classList.toggle('on');updateCount();});host.appendChild(el);});}
+function updateCount(){const avail=poolEntries().length,ask=selCount===0?avail:Math.min(selCount,avail);$('countInfo').innerHTML=avail===0?'단원을 1개 이상 골라주세요.':`선택 <b>${avail}</b>문제 중 <b>${ask}</b>문제 출제`;$('startBtn').disabled=avail===0;$('allToggle').textContent=selTopics.size===TOPICS.length?'전체 해제':'전체 선택';}
+$('allToggle').addEventListener('click',()=>{if(selTopics.size===TOPICS.length)selTopics.clear();else selTopics=new Set(TOPICS.map(t=>t.id));renderUnits();updateCount();});
+$('countSeg').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;[...$('countSeg').children].forEach(c=>c.classList.remove('on'));b.classList.add('on');selCount=parseInt(b.dataset.n,10);updateCount();});
+function buildQuiz(entries,n){const sh=shuffle(entries.slice());const chosen=n===0?sh:sh.slice(0,n);return chosen.map(entry=>({entry,inst:entry.make()}));}
+function startQuiz(entries,n){lastEntries=entries;quiz=buildQuiz(entries,n);idx=0;answered=[];show('quiz');renderQ();}
+function show(w){['setup','quiz','result'].forEach(s=>$(s).classList.toggle('hide',s!==w));window.scrollTo({top:0,behavior:'smooth'});}
+function renderQ(){const item=quiz[idx],inst=item.inst,t=TMAP[item.entry.topic],total=quiz.length;$('qPos').textContent=`${idx+1} / ${total}`;$('qProg').style.width=`${idx/total*100}%`;$('qScore').innerHTML=`맞음 <b>${answered.filter(a=>a.correct).length}</b>`;$('qTag').textContent=t.name;$('qText').textContent=inst.q;const cb=$('qCode');if(inst.code){cb.textContent=inst.code;cb.classList.remove('hide');}else cb.classList.add('hide');const host=$('qOpts');host.innerHTML='';const keys=['1','2','3','4','5'];inst.opts.forEach((op,i)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="k">${keys[i]}</span><span class="x otext"></span><span class="mark"></span>`;b.querySelector('.otext').textContent=op.text;b.addEventListener('click',()=>pick_(i));host.appendChild(b);});$('qExplain').innerHTML='';$('nextBtn').classList.add('hide');}
+function pick_(i){const item=quiz[idx],inst=item.inst;if(answered[idx])return;const correct=inst.opts[i].correct;answered[idx]={picked:i,correct};[...$('qOpts').children].forEach((b,bi)=>{b.disabled=true;const op=inst.opts[bi];if(op.correct){b.classList.add('correct');b.querySelector('.mark').textContent='✓';}else if(bi===i){b.classList.add('wrong');b.querySelector('.mark').textContent='✕';}else b.classList.add('dim');});$('qExplain').innerHTML=`<div class="explain ${correct?'ok':''}"><span class="h">${correct?'✓ 정답':'✕ 오답'} · 해설</span>${inst.e}</div>`;$('qScore').innerHTML=`맞음 <b>${answered.filter(a=>a.correct).length}</b>`;$('qProg').style.width=`${(idx+1)/quiz.length*100}%`;const nb=$('nextBtn');nb.textContent=idx===quiz.length-1?'결과 보기 →':'다음 →';nb.classList.remove('hide');nb.focus();}
+$('nextBtn').addEventListener('click',()=>{if(idx<quiz.length-1){idx++;renderQ();}else renderResult();});
+$('quitBtn').addEventListener('click',()=>show('setup'));
+document.addEventListener('keydown',e=>{if($('quiz').classList.contains('hide'))return;if(e.key==='Enter'&&!$('nextBtn').classList.contains('hide')){$('nextBtn').click();return;}const item=quiz[idx];if(!item||answered[idx])return;const map={'1':0,'2':1,'3':2,'4':3,'5':4};if(e.key in map&&map[e.key]<item.inst.opts.length)pick_(map[e.key]);});
+function renderResult(){show('result');const total=quiz.length,correct=answered.filter(a=>a.correct).length,pct=Math.round(correct/total*100);$('scoreRing').innerHTML=`${correct}<small>/${total}</small>`;$('scoreSub').textContent=`정답률 ${pct}%`;let msg;if(pct===100)msg='완벽! 보기 섞어서 한 번 더 굳히기 🎯';else if(pct>=80)msg='좋아요. 틀린 것만 다시 잡으면 끝!';else if(pct>=60)msg='절반 이상! 틀린 것 위주로 한 번 더.';else if(pct>=40)msg='암기노트 보고 다시 도전해봐요.';else msg='괜찮아요. 노트 보고 오답부터 다시!';$('scoreMsg').textContent=msg;const wrap=$('reviewWrap');wrap.innerHTML='';const wrongs=quiz.map((it,i)=>({it,i})).filter(x=>!answered[x.i].correct);if(wrongs.length){const h=document.createElement('div');h.className='rev-h';h.innerHTML=`✕ 틀린 문제 ${wrongs.length}개 <span class="ln"></span>`;wrap.appendChild(h);wrongs.forEach(({it,i})=>wrap.appendChild(revCard(it,i)));}const det=document.createElement('details');det.className='allrev';det.innerHTML=`<summary>전체 ${total}문제 다시 보기</summary>`;const all=document.createElement('div');all.style.marginTop='8px';quiz.forEach((it,i)=>all.appendChild(revCard(it,i)));det.appendChild(all);wrap.appendChild(det);$('retryWrong').classList.toggle('hide',wrongs.length===0);}
+function revCard(it,i){const inst=it.inst,ans=answered[i];const co=inst.opts.find(o=>o.correct).text,mine=inst.opts[ans.picked].text;const el=document.createElement('div');el.className='rev'+(ans.correct?' ok':'');let h=`<div class="rq"><span style="font-size:11px;font-weight:700;color:var(--faint);">[${TMAP[it.entry.topic].name}]</span>\n${inst.q}</div>`;h+=`<div class="ans"><span class="lab">정답 </span><span class="co">${co}</span>`;if(!ans.correct)h+=` &nbsp;<span class="lab">내 답 </span><span class="mine">${mine}</span>`;h+=`</div><div class="ex">${inst.e}</div>`;el.innerHTML=h;return el;}
+$('retrySame').addEventListener('click',()=>startQuiz(poolEntries(),selCount));
+$('retryWrong').addEventListener('click',()=>{const ent=quiz.filter((it,i)=>!answered[i].correct).map(it=>it.entry);startQuiz(ent,0);});
+$('backSetup').addEventListener('click',()=>show('setup'));
+$('startBtn').addEventListener('click',()=>startQuiz(poolEntries(),selCount));
+renderUnits();updateCount();
+</script>
+</body>
+</html>
